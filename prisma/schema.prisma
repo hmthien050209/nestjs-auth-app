@@ -8,8 +8,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model playing_with_neon {
-  id    Int    @id @default(autoincrement())
-  name  String
-  value Float? @db.Real
+model User {
+  id String @id @default(uuid()) 
+  username String
+  password String
+  email String
 }
