@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 
@@ -21,17 +21,25 @@ export class UsersService {
     orderBy?: Prisma.UserOrderByWithRelationInput;
   }): Promise<User[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+    try {
+      return this.prisma.user.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+      });
+    } catch {
+      throw new BadRequestException('Invalid input');
+    }
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    return await this.prisma.user.create({ data });
+    try {
+      return await this.prisma.user.create({ data });
+    } catch {
+      throw new BadRequestException('Invalid input');
+    }
   }
 
   async updateUser(params: {
@@ -39,13 +47,21 @@ export class UsersService {
     data: Prisma.UserUpdateInput;
   }): Promise<User> {
     const { where, data } = params;
-    return await this.prisma.user.update({
-      where,
-      data,
-    });
+    try {
+      return await this.prisma.user.update({
+        where,
+        data,
+      });
+    } catch {
+      throw new BadRequestException('Invalid input');
+    }
   }
 
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    return this.prisma.user.delete({ where });
+    try {
+      return this.prisma.user.delete({ where });
+    } catch {
+      throw new BadRequestException('Invalid input');
+    }
   }
 }

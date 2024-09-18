@@ -14,7 +14,8 @@ model User {
   password String
   email String
   avatarUrl String
-  createdAt DateTime
+  createdAt DateTime @db.Timestamptz() @default(now())
+  updatedAt DateTime @updatedAt @db.Timestamptz() @default(now())
   role Role
 }
 
