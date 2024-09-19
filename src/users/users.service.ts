@@ -5,12 +5,25 @@ import { PrismaService } from 'src/prisma.service';
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
-  async user(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<User | null> {
-    return await this.prisma.user.findUnique({
-      where: userWhereUniqueInput,
+  async user(params: {
+    where: Prisma.UserWhereUniqueInput;
+    excludePassword: boolean;
+  }): Promise<Partial<User> | null> {
+    const { where, excludePassword } = params;
+    const res = await this.prisma.user.findUnique({
+      where,
     });
+
+    if (res === null) {
+      return null;
+    }
+
+    if (excludePassword) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...results } = res;
+      return { ...results };
+    }
+    return res;
   }
 
   async users(params: {

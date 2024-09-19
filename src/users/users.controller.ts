@@ -17,9 +17,12 @@ export class UsersController {
   constructor(private readonly users: UsersService) {}
 
   @Get('/user/:id')
-  async getUser(@Param('id') id: string): Promise<User> {
+  async getUser(@Param('id') id: string): Promise<Partial<User>> {
     try {
-      const res = await this.users.user({ id });
+      const res = await this.users.user({
+        where: { id },
+        excludePassword: true,
+      });
       if (res === null) {
         throw new NotFoundException();
       }
@@ -42,11 +45,9 @@ export class UsersController {
   // }
 
   @Post('/user')
-  async createUser(
-    @Body() createUserInput: Prisma.UserCreateInput,
-  ): Promise<User> {
+  async createUser(@Body() input: Prisma.UserCreateInput): Promise<User> {
     try {
-      return await this.users.createUser(createUserInput);
+      return await this.users.createUser(input);
     } catch (error) {
       throw error;
     }
@@ -55,12 +56,12 @@ export class UsersController {
   @Put('/user/:id')
   async updateUser(
     @Param('id') id: string,
-    @Body() updateUserInput: Prisma.UserUpdateInput,
+    @Body() input: Prisma.UserUpdateInput,
   ): Promise<User> {
     try {
       return await this.users.updateUser({
         where: { id },
-        data: updateUserInput,
+        data: input,
       });
     } catch (error) {
       throw error;
@@ -68,9 +69,9 @@ export class UsersController {
   }
 
   @Delete('/user/:id')
-  async deleteUser(@Param('id') id: string): Promise<User> {
+  async deleteUser(@Param('id') id: string) {
     try {
-      return await this.users.deleteUser({ id });
+      await this.users.deleteUser({ id });
     } catch (error) {
       throw error;
     }

@@ -45,9 +45,12 @@ describe('UsersController', () => {
     createdUserName = createdUser.username;
   });
 
-  it("should fetch user's data", async () => {
+  it("should fetch user's data without password", async () => {
     expect(await controller.getUser(createdUserId)).toStrictEqual(
-      await service.user({ id: createdUserId }),
+      await service.user({
+        where: { id: createdUserId },
+        excludePassword: true,
+      }),
     );
   });
 

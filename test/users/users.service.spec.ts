@@ -34,9 +34,22 @@ describe('UsersService', () => {
     createdUserName = createdUser.username;
   });
 
-  it("should fetch user's data", async () => {
-    const user = await service.user({ id: createdUserId });
+  it("should fetch user's data with password", async () => {
+    const user = await service.user({
+      where: { id: createdUserId },
+      excludePassword: false,
+    });
     expect(user).not.toBeNull();
+    expect(user?.password).toBeDefined();
+  });
+
+  it("should fetch user's data without password", async () => {
+    const user = await service.user({
+      where: { id: createdUserId },
+      excludePassword: true,
+    });
+    expect(user).not.toBeNull();
+    expect(user?.password).toBeUndefined();
   });
 
   it('should not create user with duplicated username', async () => {
@@ -70,6 +83,11 @@ describe('UsersService', () => {
     await expect(
       service.deleteUser({ id: createdUserId }),
     ).resolves.not.toThrow();
-    expect(await service.user({ id: createdUserId })).toBeNull();
+    expect(
+      await service.user({
+        where: { id: createdUserId },
+        excludePassword: true,
+      }),
+    ).toBeNull();
   });
 });
