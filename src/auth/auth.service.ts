@@ -1,26 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
+import bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly users: UsersService) {}
 
-  async validate(
-    username: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    password: string,
-  ): Promise<Partial<User> | null> {
+  async validate(params: {
+    username: string;
+    password: string;
+  }): Promise<Partial<User>> {
+    const { username, password } = params;
     const user = await this.users.user({
-      username,
+      where: { username },
+      excludePassword: false,
     });
-    // TODO: implement password verification with bcrypt here
-    if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _, ...result } = user;
-      return result;
+    if (user === null || !user) {
+      throw new NotFoundException();
+    } else {
+      if (await bcrypt.compare(password, user.password!)) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _, ...result } = user;
+        return result;
+      } else {
+        throw new UnauthorizedException();
+      }
     }
-    return null;
   }
 
   async signUp(user: User): Promise<User> {

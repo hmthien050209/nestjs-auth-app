@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
-import bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma.service';
 import { UsersService } from 'src/users/users.service';
 
@@ -25,7 +24,7 @@ describe('UsersService', () => {
     const createdUser = await service.createUser({
       email: faker.internet.email(),
       username: faker.internet.userName(),
-      password: await bcrypt.hash(faker.internet.password({ length: 10 }), 10),
+      password: faker.internet.password({ length: 10 }),
       avatarUrl: faker.internet.url(),
       role: 'USER',
     });
@@ -53,15 +52,11 @@ describe('UsersService', () => {
   });
 
   it('should not create user with duplicated username', async () => {
-    const fakePass = await bcrypt.hash(
-      faker.internet.password({ length: 10 }),
-      10,
-    );
     await expect(
       service.createUser({
         email: faker.internet.email(),
         username: createdUserName,
-        password: fakePass,
+        password: faker.internet.password({ length: 10 }),
         avatarUrl: faker.internet.url(),
         role: 'USER',
       }),

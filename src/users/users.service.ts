@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
+import bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -20,8 +21,8 @@ export class UsersService {
 
     if (excludePassword) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...results } = res;
-      return { ...results };
+      const { password, ...result } = res;
+      return result;
     }
     return res;
   }
@@ -49,7 +50,13 @@ export class UsersService {
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     try {
-      return await this.prisma.user.create({ data });
+      const { password, ..._data } = data;
+      return await this.prisma.user.create({
+        data: {
+          ..._data,
+          password: await bcrypt.hash(password, 10),
+        },
+      });
     } catch {
       throw new BadRequestException('Invalid input');
     }
