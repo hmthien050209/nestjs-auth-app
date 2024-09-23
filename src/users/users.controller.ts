@@ -44,6 +44,7 @@ export class UsersController {
   //   return this.users.users({ skip, take, cursor, where, orderBy });
   // }
 
+  // TODO: Should only be exposed to Admins
   @Post('/user')
   async createUser(@Body() input: Prisma.UserCreateInput): Promise<User> {
     try {

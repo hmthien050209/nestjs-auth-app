@@ -17,8 +17,8 @@ describe('Users', () => {
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [UsersModule],
-      providers: [PrismaService, UsersService],
     })
+      .useMocker(() => createMock<PrismaService>())
       .useMocker(() => createMock<UsersService>())
       .compile();
 
@@ -28,10 +28,6 @@ describe('Users', () => {
 
   it('should be defined', () => {
     expect(app).toBeDefined();
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   it('/POST /users/user', async () => {
@@ -92,5 +88,9 @@ describe('Users', () => {
       `/users/user/${createdUserId}`,
     );
     expect(getRes.statusCode).toBe(404);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });

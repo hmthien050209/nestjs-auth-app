@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { createMock } from '@golevelup/ts-vitest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
@@ -19,9 +18,7 @@ describe('UsersController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [PrismaService, UsersService],
-    })
-      .useMocker(() => createMock<UsersService>())
-      .compile();
+    }).compile();
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);

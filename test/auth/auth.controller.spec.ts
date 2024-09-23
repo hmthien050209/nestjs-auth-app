@@ -19,7 +19,7 @@ describe('AuthController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [UsersModule],
       controllers: [AuthController],
-      providers: [AuthService, PrismaService, UsersService],
+      providers: [AuthService, PrismaService],
     })
       .useMocker(() => createMock<UsersService>())
       .compile();
@@ -54,21 +54,11 @@ describe('AuthController', () => {
     );
   });
 
-  it('should invalidate user with wrong authentication info', async () => {
+  it('should invalidate user with wrong credentials', async () => {
     // The exception will be handled by NestJS
     await expect(
       controller.validate({
         username: createdUsername,
-        password: faker.internet.password({ length: 10 }),
-      }),
-    ).resolves.toEqual({});
-  });
-
-  it('should throw NotFoundException when the user is not found', async () => {
-    // The exception will be handled by NestJS
-    await expect(
-      controller.validate({
-        username: faker.internet.userName(),
         password: faker.internet.password({ length: 10 }),
       }),
     ).resolves.toEqual({});

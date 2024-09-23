@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -18,7 +18,11 @@ export class AuthService {
       excludePassword: false,
     });
     if (user === null || !user) {
-      throw new NotFoundException();
+      // For security reasons, we don't want the attacker to be able to find
+      // out if a user is existing or not on the Auth API endpoint. That's
+      // should be handled instead by the Users API endpoint, which will be
+      // available only for Admins.
+      throw new UnauthorizedException();
     } else {
       if (await bcrypt.compare(password, user.password!)) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
