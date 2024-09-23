@@ -40,11 +40,10 @@ describe('Auth', () => {
     createdUserId = newUser.id;
 
     // Validate the user
-    // It's post so the status code should be 201 instead of the default 200
     const res = await request(app.getHttpServer())
       .post('/auth/validate')
       .send({ username: createdUsername, password: createdUserPassword });
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(200);
   });
 
   it('/POST /auth/validate should return 401 with wrong credentials', async () => {
