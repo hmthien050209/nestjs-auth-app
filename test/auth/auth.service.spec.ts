@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
@@ -50,22 +50,22 @@ describe('AuthService', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should invalidate user with wrong authentication info', async () => {
+  it('should invalidate user with wrong credentials', async () => {
+    // Wrong password
     await expect(
       service.validate({
         username: createdUsername,
         password: faker.internet.password({ length: 10 }),
       }),
     ).rejects.toThrow(new UnauthorizedException());
-  });
 
-  it('should throw NotFoundException when the user is not found', async () => {
+    // Wrong username
     await expect(
       service.validate({
         username: faker.internet.userName(),
         password: faker.internet.password({ length: 10 }),
       }),
-    ).rejects.toThrow(new NotFoundException());
+    ).rejects.toThrow(new UnauthorizedException());
   });
 
   afterAll(async () => {

@@ -47,7 +47,7 @@ describe('Users', () => {
     createdUserId = res.body.id;
   });
 
-  it('/POST /users/user should fail with duplicated user', async () => {
+  it('/POST /users/user should return 400 when create user with existing username', async () => {
     const newUser: Prisma.UserCreateInput = {
       email: faker.internet.email(),
       username: createdUsername,
